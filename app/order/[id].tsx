@@ -298,10 +298,10 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.background },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   errorText: { fontFamily: 'Cairo_400Regular', fontSize: 16, color: Colors.textMuted },
-  header: { flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 },
+  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, paddingTop: 17, paddingBottom: 12, gap: 12 },
   backBtn: { padding: 4 },
-  headerTitle: { flex: 1, fontFamily: 'Cairo_700Bold', fontSize: 20, color: Colors.textPrimary, textAlign: 'right' },
-  scroll: { padding: 16, paddingBottom: 40 },
+  headerTitle: { flex: 1, fontFamily: 'Cairo_800ExtraBold', fontSize: 21, color: Colors.textPrimary, textAlign: 'right' },
+  scroll: { paddingHorizontal: 16, paddingBottom: 44 },
   payNowBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
     backgroundColor: Colors.primary, borderRadius: 12, paddingVertical: 14,
@@ -312,8 +312,8 @@ const styles = StyleSheet.create({
   supportBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderWidth: 1, borderColor: Colors.primary, borderRadius: 12, paddingVertical: 12, marginTop: 12 },
   supportBtnText: { fontFamily: 'Cairo_700Bold', fontSize: 13, color: Colors.primary },
   statusCard: {
-    backgroundColor: Colors.surface, borderRadius: 20, padding: 20,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3,
+    backgroundColor: Colors.surface, borderRadius: 20, padding: 19,
+    shadowColor: '#171827', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.055, shadowRadius: 11, elevation: 3,
     marginBottom: 16,
   },
   statusRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
   badge: { borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6 },
   badgeText: { fontFamily: 'Cairo_600SemiBold', fontSize: 13 },
   divider: { height: 1, backgroundColor: Colors.border, marginBottom: 16 },
-  guidanceCard: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, backgroundColor: '#FFF7F7', borderRadius: 13, padding: 12, marginBottom: 16 },
+  guidanceCard: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, backgroundColor: '#FFF4F4', borderRadius: 14, padding: 13, marginBottom: 16 },
   guidanceIcon: { width: 36, height: 36, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFE9E9' },
   guidanceCopy: { flex: 1, alignItems: 'flex-end' },
   guidanceTitle: { fontFamily: 'Cairo_700Bold', fontSize: 14, color: Colors.textPrimary, textAlign: 'right' },
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
   sectionTitle: { fontFamily: 'Cairo_700Bold', fontSize: 18, color: Colors.textPrimary, textAlign: 'right', marginBottom: 12 },
   timelineCard: {
     backgroundColor: Colors.surface, borderRadius: 20, padding: 16,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3,
+    shadowColor: '#171827', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.055, shadowRadius: 11, elevation: 3,
     marginBottom: 16,
   },
   timelineEntry: { flexDirection: 'row', gap: 12, marginBottom: 16 },
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
   timelineDate: { fontFamily: 'Cairo_400Regular', fontSize: 11, color: Colors.textMuted, textAlign: 'right' },
   filesCard: {
     backgroundColor: Colors.surface, borderRadius: 20, overflow: 'hidden',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3,
+    shadowColor: '#171827', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.055, shadowRadius: 11, elevation: 3,
     marginBottom: 16,
   },
   fileRow: {

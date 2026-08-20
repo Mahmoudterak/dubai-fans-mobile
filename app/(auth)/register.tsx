@@ -187,19 +187,19 @@ export default function RegisterScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.background },
-  scroll: { flexGrow: 1, padding: 20 },
-  back: { alignSelf: 'flex-end', marginBottom: 8 },
-  pageTitle: { fontFamily: 'Cairo_800ExtraBold', fontSize: 26, color: Colors.textPrimary, textAlign: 'right', marginBottom: 20 },
+  scroll: { flexGrow: 1, paddingHorizontal: 22, paddingTop: 26, paddingBottom: 30 },
+  back: { alignSelf: 'flex-end', marginBottom: 10, backgroundColor: Colors.surface, borderRadius: 20, padding: 8 },
+  pageTitle: { fontFamily: 'Cairo_800ExtraBold', fontSize: 28, color: Colors.textPrimary, textAlign: 'right', marginBottom: 21 },
   card: {
-    backgroundColor: Colors.surface, borderRadius: 24, padding: 20,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08, shadowRadius: 16, elevation: 4,
+    backgroundColor: Colors.surface, borderRadius: 24, padding: 22,
+    shadowColor: '#171827', shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06, shadowRadius: 16, elevation: 4,
   },
   fieldWrap: { marginBottom: 14 },
   label: { fontFamily: 'Cairo_600SemiBold', fontSize: 14, color: Colors.textPrimary, textAlign: 'right', marginBottom: 8 },
   inputWrap: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: Colors.background, borderRadius: 12,
+    backgroundColor: Colors.background, borderRadius: 14,
     borderWidth: 1.5, borderColor: Colors.border, paddingHorizontal: 12,
   },
   inputIcon: { marginLeft: 8 },
@@ -208,8 +208,8 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary, paddingVertical: 13, textAlign: 'right',
   },
   btn: {
-    backgroundColor: Colors.primary, paddingVertical: 15,
-    borderRadius: 14, alignItems: 'center', marginTop: 8,
+    backgroundColor: Colors.primary, paddingVertical: 16,
+    borderRadius: 15, alignItems: 'center', marginTop: 8, minHeight: 52,
   },
   btnDisabled: { opacity: 0.7 },
   btnText: { fontFamily: 'Cairo_700Bold', fontSize: 16, color: '#fff' },

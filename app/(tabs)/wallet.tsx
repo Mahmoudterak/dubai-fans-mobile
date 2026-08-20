@@ -346,15 +346,15 @@ function BankDetail({ label, value, copyable, onCopy }: {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.background },
-  scroll: { padding: 20, paddingBottom: 40 },
-  screenTitle: { fontFamily: 'Cairo_800ExtraBold', fontSize: 22, color: Colors.textPrimary, textAlign: 'right', marginBottom: 16 },
+  scroll: { paddingHorizontal: 20, paddingTop: 18, paddingBottom: 44 },
+  screenTitle: { fontFamily: 'Cairo_800ExtraBold', fontSize: 23, color: Colors.textPrimary, textAlign: 'right', marginBottom: 17 },
 
   balanceCard: {
-    backgroundColor: Colors.primary, borderRadius: 24, padding: 24,
+    backgroundColor: Colors.primary, borderRadius: 22, padding: 24,
     alignItems: 'center',
     shadowColor: Colors.primary, shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.35, shadowRadius: 16, elevation: 10,
-    marginBottom: 24,
+    shadowOpacity: 0.28, shadowRadius: 17, elevation: 10,
+    marginBottom: 26,
   },
   balanceLabel: { fontFamily: 'Cairo_400Regular', fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 8 },
   balanceAmount: { fontFamily: 'Cairo_800ExtraBold', fontSize: 48, color: '#fff', lineHeight: 56 },
@@ -371,25 +371,25 @@ const styles = StyleSheet.create({
   },
   topUpBtnText: { fontFamily: 'Cairo_700Bold', fontSize: 16, color: '#fff' },
 
-  sectionTitle: { fontFamily: 'Cairo_700Bold', fontSize: 17, color: Colors.textPrimary, textAlign: 'right', marginBottom: 12 },
+  sectionTitle: { fontFamily: 'Cairo_700Bold', fontSize: 17, color: Colors.textPrimary, textAlign: 'right', marginBottom: 13, marginTop: 2 },
   amountsRow: { flexDirection: 'row', gap: 8, marginBottom: 8 },
   amountChip: {
-    flex: 1, backgroundColor: Colors.surface, borderRadius: 12,
+    flex: 1, backgroundColor: Colors.surface, borderRadius: 14,
     paddingVertical: 10, alignItems: 'center',
     borderWidth: 1.5, borderColor: Colors.border,
   },
   amountChipText: { fontFamily: 'Cairo_600SemiBold', fontSize: 13, color: Colors.textPrimary },
 
   txList: {
-    backgroundColor: Colors.surface, borderRadius: 16,
+    backgroundColor: Colors.surface, borderRadius: 18,
     overflow: 'hidden',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06, shadowRadius: 8, elevation: 3,
+    shadowColor: '#171827', shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.055, shadowRadius: 11, elevation: 3,
     marginTop: 4,
   },
   txRow: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    padding: 14, borderBottomWidth: 1, borderBottomColor: Colors.border,
+    padding: 15, borderBottomWidth: 1, borderBottomColor: Colors.border,
   },
   txLeft: { flex: 1 },
   txRight: { alignItems: 'flex-end' },
@@ -397,19 +397,19 @@ const styles = StyleSheet.create({
   txDesc: { fontFamily: 'Cairo_400Regular', fontSize: 13, color: Colors.textPrimary, marginTop: 2, textAlign: 'right' },
   txAmount: { fontFamily: 'Cairo_700Bold', fontSize: 16 },
   txBalance: { fontFamily: 'Cairo_400Regular', fontSize: 11, color: Colors.textMuted, marginTop: 2 },
-  emptyTx: { alignItems: 'center', paddingVertical: 40 },
+  emptyTx: { alignItems: 'center', paddingVertical: 46, backgroundColor: Colors.surface, borderRadius: 18 },
   emptyTxText: { fontFamily: 'Cairo_400Regular', fontSize: 14, color: Colors.textMuted, marginTop: 12 },
 
-  modalSafe: { flex: 1, backgroundColor: Colors.surface },
+  modalSafe: { flex: 1, backgroundColor: Colors.background },
   modalHeader: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: Colors.border,
+    paddingHorizontal: 20, paddingVertical: 17, borderBottomWidth: 1, borderBottomColor: Colors.border, backgroundColor: Colors.surface,
   },
   modalTitle: { fontFamily: 'Cairo_700Bold', fontSize: 18, color: Colors.textPrimary },
-  modalContent: { padding: 20 },
+  modalContent: { padding: 20, paddingBottom: 40 },
   fieldLabel: { fontFamily: 'Cairo_600SemiBold', fontSize: 14, color: Colors.textPrimary, textAlign: 'right', marginBottom: 8 },
   fieldInput: {
-    backgroundColor: Colors.background, borderRadius: 12,
+    backgroundColor: Colors.surface, borderRadius: 14,
     borderWidth: 1.5, borderColor: Colors.border, padding: 14,
     fontFamily: 'Cairo_400Regular', fontSize: 15, color: Colors.textPrimary,
     marginBottom: 20,
@@ -433,7 +433,7 @@ const styles = StyleSheet.create({
   methodBtnText: { fontFamily: 'Cairo_600SemiBold', fontSize: 13, color: Colors.textPrimary },
   methodBtnTextActive: { color: '#fff' },
   bankCard: {
-    backgroundColor: '#FFF8F8', borderRadius: 14, borderWidth: 1, borderColor: '#FAD4D5',
+    backgroundColor: '#FFF4F4', borderRadius: 16, borderWidth: 1, borderColor: '#F5D1D3',
     padding: 14, marginBottom: 20,
   },
   bankCardHeader: { flexDirection: 'row-reverse', alignItems: 'center', gap: 8, marginBottom: 8 },

@@ -1,0 +1,74 @@
+{
+  "expo": {
+    "name": "Dubai Fans",
+    "slug": "dubai-fans-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "dubaifans",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFFFF"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.dubaifans.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.mtuaes.dubaifans",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "dubaifans",
+              "host": "payment",
+              "pathPrefix": "/result"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/favicon.png"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/245ecb26-7a0e-4add-8a9c-8011eb38851d"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-web-browser",
+      "expo-secure-store",
+      "expo-image-picker",
+      "expo-updates"
+    ],
+    "experiments": {
+      "typedRoutes": false
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "245ecb26-7a0e-4add-8a9c-8011eb38851d"
+      }
+    },
+    "owner": "mtuaes-team"
+  }
+}

@@ -1,0 +1,82 @@
+name: Mobile Development Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: Why this development build is needed
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-development-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Android development build
+    runs-on: ubuntu-latest
+    environment: development
+
+    steps:
+      - name: Checkout mobile source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: package-lock.json
+          registry-url: https://registry.npmjs.org
+
+      - name: Set up pnpm command runner
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.1
+
+      - name: Validate source before building
+        run: |
+          node scripts/ci/validate-mobile-release-contract.mjs
+          npm ci
+          pnpm exec tsc --noEmit
+          pnpm exec expo config --json > "${RUNNER_TEMP}/expo-config.json"
+          npx --yes expo-doctor
+          git diff --check
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD | tee "${RUNNER_TEMP}/source-commit.txt"
+
+      - name: Build Android development client
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EAS_NO_VCS: "1"
+          EAS_PROJECT_ROOT: ${{ github.workspace }}
+        run: |
+          test -n "$EXPO_TOKEN" || { echo "EXPO_TOKEN secret is required."; exit 1; }
+          npx --yes eas-cli@21.8.0 build \
+            --platform android \
+            --profile development \
+            --non-interactive \
+            --wait \
+            --json > "${RUNNER_TEMP}/eas-development-build.json"
+
+      - name: Record development build details
+        run: |
+          node scripts/ci/collect-eas-build.mjs \
+            "${RUNNER_TEMP}/eas-development-build.json" \
+            "${RUNNER_TEMP}/development-build-metadata.json" \
+            development \
+            apk
+
+      - name: Save development build metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-development-build-metadata-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/source-commit.txt
+            ${{ runner.temp }}/development-build-metadata.json
+          if-no-files-found: error
+          retention-days: 30

@@ -1,0 +1,70 @@
+name: Mobile CI Validation
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Dependency, TypeScript, Expo and source checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout mobile source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: package-lock.json
+          registry-url: https://registry.npmjs.org
+
+      - name: Set up pnpm command runner
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.1
+
+      - name: Validate dependency and release contract
+        run: node scripts/ci/validate-mobile-release-contract.mjs
+
+      - name: Clean dependency install
+        run: npm ci
+
+      - name: TypeScript
+        run: pnpm exec tsc --noEmit
+
+      - name: Expo configuration
+        run: pnpm exec expo config --json > "${RUNNER_TEMP}/expo-config.json"
+
+      - name: Expo Doctor
+        run: npx --yes expo-doctor
+
+      - name: Tests when configured
+        run: npm run test --if-present
+
+      - name: Whitespace and source consistency
+        run: |
+          git diff --check
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD | tee "${RUNNER_TEMP}/source-commit.txt"
+
+      - name: Save CI metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-ci-metadata-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/expo-config.json
+            ${{ runner.temp }}/source-commit.txt
+          if-no-files-found: error
+          retention-days: 14

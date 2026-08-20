@@ -1,0 +1,93 @@
+name: Mobile EAS Update (Development)
+
+on:
+  workflow_dispatch:
+    inputs:
+      message:
+        description: Release note for the development update
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: mobile-development-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    name: Publish development JavaScript update
+    runs-on: ubuntu-latest
+    environment: development
+
+    steps:
+      - name: Checkout mobile source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: package-lock.json
+          registry-url: https://registry.npmjs.org
+
+      - name: Set up pnpm command runner
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.1
+
+      - name: Validate source before publishing
+        run: |
+          node scripts/ci/validate-mobile-release-contract.mjs
+          npm ci
+          pnpm exec tsc --noEmit
+          pnpm exec expo config --json > "${RUNNER_TEMP}/expo-config.json"
+          npx --yes expo-doctor
+          git diff --check
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD | tee "${RUNNER_TEMP}/source-commit.txt"
+
+      - name: Find compatible Development Build provenance
+        id: baseline
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --paginate \
+            "/repos/${GITHUB_REPOSITORY}/actions/workflows/development-build.yml/runs?status=completed&per_page=100" \
+            --jq '.workflow_runs[] | select(.conclusion == "success") | .head_sha' \
+            > "${RUNNER_TEMP}/successful-development-build-commits.txt"
+          baseline="$(node scripts/ci/resolve-development-baseline.mjs "${RUNNER_TEMP}/successful-development-build-commits.txt")"
+          echo "commit=$baseline" >> "$GITHUB_OUTPUT"
+
+      - name: Detect native changes from the Development Build baseline
+        run: node scripts/ci/detect-native-changes.mjs "${{ steps.baseline.outputs.commit }}"
+
+      - name: Publish to the development branch only
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EAS_NO_VCS: "1"
+          EAS_PROJECT_ROOT: ${{ github.workspace }}
+          UPDATE_MESSAGE: ${{ inputs.message }}
+        run: |
+          test -n "$EXPO_TOKEN" || { echo "EXPO_TOKEN secret is required."; exit 1; }
+          npx --yes eas-cli@21.8.0 update \
+            --branch development \
+            --platform android \
+            --non-interactive \
+            --message "$UPDATE_MESSAGE" \
+            --json > "${RUNNER_TEMP}/eas-development-update.json"
+
+      - name: Save update details
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-development-update-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/source-commit.txt
+            ${{ runner.temp }}/eas-development-update.json
+          if-no-files-found: error
+          retention-days: 30

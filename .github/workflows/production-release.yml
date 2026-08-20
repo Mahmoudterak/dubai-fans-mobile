@@ -1,0 +1,123 @@
+name: Production Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_reason:
+        description: Approval note for this Android production release
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-production-release
+  cancel-in-progress: false
+
+jobs:
+  production_aab:
+    name: Production Android AAB and internal-testing artifact
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+
+    steps:
+      - name: Checkout approved mobile source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: package-lock.json
+          registry-url: https://registry.npmjs.org
+
+      - name: Set up pnpm command runner
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.1
+
+      - name: CI gate for the approved source
+        run: |
+          node scripts/ci/validate-mobile-release-contract.mjs
+          npm ci
+          pnpm exec tsc --noEmit
+          pnpm exec expo config --json > "${RUNNER_TEMP}/expo-config.json"
+          npx --yes expo-doctor
+          npm run test --if-present
+          git diff --check
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD | tee "${RUNNER_TEMP}/source-commit.txt"
+
+      - name: Build Android App Bundle only
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EAS_NO_VCS: "1"
+          EAS_PROJECT_ROOT: ${{ github.workspace }}
+        run: |
+          test -n "$EXPO_TOKEN" || { echo "EXPO_TOKEN secret is required."; exit 1; }
+          npx --yes eas-cli@21.8.0 build \
+            --platform android \
+            --profile production \
+            --non-interactive \
+            --wait \
+            --json > "${RUNNER_TEMP}/eas-production-build.json"
+
+      - name: Verify EAS production metadata
+        run: |
+          node scripts/ci/collect-eas-build.mjs \
+            "${RUNNER_TEMP}/eas-production-build.json" \
+            "${RUNNER_TEMP}/production-build-metadata.json" \
+            production \
+            aab
+
+      - name: Download the AAB for internal testing
+        id: artifact
+        run: |
+          artifact_url="$(node -p "require('${RUNNER_TEMP}/production-build-metadata.json').artifactUrl")"
+          version="$(node -p "require('${RUNNER_TEMP}/production-build-metadata.json').version")"
+          version_code="$(node -p "require('${RUNNER_TEMP}/production-build-metadata.json').versionCode")"
+          artifact_path="${RUNNER_TEMP}/dubai-fans-mobile-${version}-${version_code}.aab"
+          curl --fail --location --retry 3 --retry-delay 2 "$artifact_url" --output "$artifact_path"
+          echo "path=$artifact_path" >> "$GITHUB_OUTPUT"
+
+      - name: Verify the downloaded AAB and embedded JavaScript
+        run: |
+          node scripts/ci/verify-production-aab.mjs \
+            "${{ steps.artifact.outputs.path }}" \
+            "${RUNNER_TEMP}/source-commit.txt" \
+            "${RUNNER_TEMP}/production-aab-verification.json"
+
+      - name: Write release summary
+        run: |
+          build_id="$(node -p "require('${RUNNER_TEMP}/production-build-metadata.json').buildId")"
+          version="$(node -p "require('${RUNNER_TEMP}/production-build-metadata.json').version")"
+          version_code="$(node -p "require('${RUNNER_TEMP}/production-build-metadata.json').versionCode")"
+          runtime="$(node -p "require('${RUNNER_TEMP}/production-build-metadata.json').runtimeVersion")"
+          artifact_url="$(node -p "require('${RUNNER_TEMP}/production-build-metadata.json').artifactUrl")"
+          source_commit="$(cat "${RUNNER_TEMP}/source-commit.txt")"
+          {
+            echo "## Dubai Fans Android Production AAB"
+            echo
+            echo "- Build ID: \`$build_id\`"
+            echo "- Version: \`$version\`"
+            echo "- Version Code: \`$version_code\`"
+            echo "- Runtime Version: \`$runtime\`"
+            echo "- Source Commit: \`$source_commit\`"
+            echo "- EAS Artifact: $artifact_url"
+            echo "- Internal-testing AAB: uploaded as this workflow's artifact"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Save verified AAB and release metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: dubai-fans-production-aab-${{ github.run_id }}
+          path: |
+            ${{ steps.artifact.outputs.path }}
+            ${{ runner.temp }}/source-commit.txt
+            ${{ runner.temp }}/production-build-metadata.json
+            ${{ runner.temp }}/production-aab-verification.json
+          if-no-files-found: error
+          retention-days: 30

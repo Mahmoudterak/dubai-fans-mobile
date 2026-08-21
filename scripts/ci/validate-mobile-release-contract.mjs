@@ -45,14 +45,14 @@ for (const [name, version] of Object.entries(expectedRuntime)) {
 }
 
 const lockText = readFileSync(resolve(root, "package-lock.json"), "utf8");
-if (/replit(?:\.com|\.dev)|npm\.replit|packages\.replit/i.test(lockText)) {
-  fail("package-lock.json contains a Replit-internal registry URL that EAS cannot use.");
+if (/replit(?:\.com|\.dev|\.local)|npm\.replit|packages\.replit|package-firewall/i.test(lockText)) {
+  fail("package-lock.json contains a Replit-internal registry URL that CI cannot use.");
 }
 
 for (const match of lockText.matchAll(/"resolved"\s*:\s*"([^"]+)"/g)) {
   const url = match[1];
-  if (url.startsWith("https://") && !url.startsWith("https://registry.npmjs.org/")) {
-    fail(`package-lock.json uses a non-public npm resolved URL: ${url}`);
+  if (!url.startsWith("https://registry.npmjs.org/")) {
+    fail("package-lock.json uses a non-public npm resolved URL: " + url);
   }
 }
 
